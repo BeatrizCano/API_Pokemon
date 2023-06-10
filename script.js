@@ -24,34 +24,41 @@ function updatePokemons(url) {
         fetch(url)
         .then(res => res.json())
         .then(res => {
-            res.results.sort((a,b) => a.id - b.id);
+            res.results.sort((a, b) => a.id - b.id);
 
-            for (let i of res.results) {
-            fetch(i.url)
-            .then(x => x.json())
-            .then(x => {
-            let types = x.types.map(type => type.type.name);
-            let primaryType = types[0];
+           
+            const pokemonPromises = res.results.map(pokemon => {
+                return fetch(pokemon.url).then(response => response.json());
+            });
 
-                pokeContainer.innerHTML += 
-                `<div class="pokemon" style="background-color: ${colors[primaryType]}">
-                    <div class="img-container">
-                        <img src="${x.sprites.front_default}" alt="">
-                    </div>
-                    <div class="info">
-                        <span class="number"># ${x.id}</span>
-                        <h3 class="name">${x.name}</h3>
-                        <small class="type">Type: ${types}</small>
-                    </div>
-                </div>`;
-            })
-            };
+           
+            Promise.all(pokemonPromises)
+                .then(pokemons => {
+                    for (let i = 0; i < pokemons.length; i++) {
+                        let x = pokemons[i];
+                        let types = x.types.map(type => type.type.name);
+                        let primaryType = types[0];
 
-            links.innerHTML = (res.previous) ? 
-            `<button class="button" onclick = "updatePokemons('${res.previous}')">Back</button>` : "";
+                        pokeContainer.innerHTML += 
+                            `<div class="pokemon" style="background-color: ${colors[primaryType]}">
+                                <div class="img-container">
+                                    <img src="${x.sprites.front_default}" alt="">
+                                </div>
+                                <div class="info">
+                                    <span class="number"># ${x.id}</span>
+                                    <h3 class="name">${x.name}</h3>
+                                    <small class="type">Type: ${types.join(", ")}</small>
+                                </div>
+                            </div>`;
+                    }
 
-            links.innerHTML += (res.next) ?
-            `<button class="button"  onclick = "updatePokemons('${res.next}')">Next</button>` : "";
+                    
+                    links.innerHTML = (res.previous) ? 
+                    `<button class="button" onclick="updatePokemons('${res.previous}')">Back</button>` : "";
+
+                    links.innerHTML += (res.next) ?
+                    `<button class="button" onclick="updatePokemons('${res.next}')">Next</button>` : "";
+                });
         });
     }
 }
