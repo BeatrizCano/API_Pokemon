@@ -2,7 +2,7 @@
 
 <h3>Instrucciones de Implementación:</h3>
 
-<h4>Ver el video de explicación de reto.</h4>
+<h4>Ver el video de explicación de reto:</h4>
 <a>https://drive.google.com/file/d/1H_P9_B2SVI4Pm-rdozXZB_T53jiVu5QG/view</a>
  
 <p>La API que se usará es: pokeapi.co</p>
